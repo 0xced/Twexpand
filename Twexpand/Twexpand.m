@@ -9,6 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #import <objc/runtime.h>
 
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+
 @interface Twexpand : NSObject
 @end
 
@@ -36,6 +38,10 @@ static BOOL TwexpandSwizzle(NSString *className, SEL selector)
 	{
 		installed = TwexpandSwizzle(@"TCURLEntity", @selector(displayURL));
 	}
+	else if ([bundleIdentifier isEqualToString:@"com.tapbots.TweetbotMac"])
+	{
+		installed = TwexpandSwizzle(@"PTHTweetbotEntity", @selector(displayURLString));
+	}
 	
 	if (installed)
 		NSLog(@"Successfully installed %@ into %@", self, currentApplication.localizedName);
@@ -45,17 +51,15 @@ static BOOL TwexpandSwizzle(NSString *className, SEL selector)
 
 @end
 
-@implementation NSObject (TCURLEntity)
-
-- (id) twexpand_displayURL
+static NSString *displayURLString(id self, SEL displayURLStringSelector, SEL expandedURLSelector)
 {
-	NSString *displayURLString = [self twexpand_displayURL];
+	NSString *displayURLString = [self performSelector:NSSelectorFromString([@"twexpand_" stringByAppendingString:NSStringFromSelector(displayURLStringSelector)])];
 	NSString *expandedURLString = nil;
 	if ([displayURLString isKindOfClass:[NSString class]])
 	{
 		@try
 		{
-			expandedURLString = [[self performSelector:@selector(URL)] absoluteString];
+			expandedURLString = [[self performSelector:expandedURLSelector] absoluteString];
 		}
 		@catch (NSException *exception)
 		{
@@ -66,6 +70,22 @@ static BOOL TwexpandSwizzle(NSString *className, SEL selector)
 		}
 	}
 	return expandedURLString ?: displayURLString;
+}
+
+@implementation NSObject (TCURLEntity)
+
+- (id) twexpand_displayURL
+{
+	return displayURLString(self, _cmd, @selector(URL));
+}
+
+@end
+
+@implementation NSObject (PTHTweetbotEntity)
+
+- (id) twexpand_displayURLString
+{
+	return displayURLString(self, _cmd, @selector(expandedURL));
 }
 
 @end

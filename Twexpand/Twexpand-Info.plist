@@ -30,6 +30,10 @@
 			<key>BundleIdentifier</key>
 			<string>com.YoruFukurouProject.YoruFukurou</string>
 		</dict>
+		<dict>
+			<key>BundleIdentifier</key>
+			<string>com.tapbots.TweetbotMac</string>
+		</dict>
 	</array>
 </dict>
 </plist>
