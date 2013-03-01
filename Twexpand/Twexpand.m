@@ -14,6 +14,18 @@
 
 @implementation Twexpand
 
+static BOOL TwexpandSwizzle(NSString *className, SEL selector)
+{
+	SEL twexpandSelector = NSSelectorFromString([@"twexpand_" stringByAppendingString:NSStringFromSelector(selector)]);
+	Method m1 = class_getInstanceMethod(NSClassFromString(className), selector);
+	Method m2 = class_getInstanceMethod([NSObject class], twexpandSelector);
+	BOOL swizzled = m1 && m2 && strcmp(method_getTypeEncoding(m1), method_getTypeEncoding(m2)) == 0;
+	if (swizzled)
+		method_exchangeImplementations(m1, m2);
+	
+	return swizzled;
+}
+
 + (void) install
 {
 	BOOL installed = NO;
@@ -22,12 +34,7 @@
 	
 	if ([bundleIdentifier isEqualToString:@"com.YoruFukurouProject.YoruFukurou"])
 	{
-		Class TCURLEntity = objc_getClass("TCURLEntity");
-		Method m1 = class_getInstanceMethod(TCURLEntity, @selector(displayURL));
-		Method m2 = class_getInstanceMethod([NSObject class], @selector(twexpand_displayURL));
-		installed = m1 && m2 && strcmp(method_getTypeEncoding(m1), method_getTypeEncoding(m2)) == 0;
-		if (installed)
-			method_exchangeImplementations(m1, m2);
+		installed = TwexpandSwizzle(@"TCURLEntity", @selector(displayURL));
 	}
 	
 	if (installed)
