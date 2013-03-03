@@ -52,6 +52,19 @@
 				<string>expandedURL</string>
 			</dict>
 		</dict>
+		<dict>
+			<key>BundleIdentifier</key>
+			<string>com.violasong.Hibari</string>
+			<key>SwizzleInfo</key>
+			<dict>
+				<key>TweetEntityClass</key>
+				<string>TweetTextEntity</string>
+				<key>DisplayURLSelector</key>
+				<string>displayURL</string>
+				<key>ExpandedURLSelector</key>
+				<string>expandedURL</string>
+			</dict>
+		</dict>
 	</array>
 </dict>
 </plist>
