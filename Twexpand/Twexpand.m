@@ -16,17 +16,7 @@
 
 @implementation Twexpand
 
-static BOOL TwexpandSwizzle(NSString *className, SEL selector)
-{
-	SEL twexpandSelector = NSSelectorFromString([@"twexpand_" stringByAppendingString:NSStringFromSelector(selector)]);
-	Method m1 = class_getInstanceMethod(NSClassFromString(className), selector);
-	Method m2 = class_getInstanceMethod([NSObject class], twexpandSelector);
-	BOOL swizzled = m1 && m2 && strcmp(method_getTypeEncoding(m1), method_getTypeEncoding(m2)) == 0;
-	if (swizzled)
-		method_exchangeImplementations(m1, m2);
-	
-	return swizzled;
-}
+static SEL expandedURLSelector;
 
 + (void) install
 {
@@ -34,13 +24,22 @@ static BOOL TwexpandSwizzle(NSString *className, SEL selector)
 	NSRunningApplication *currentApplication = [NSRunningApplication currentApplication];
 	NSString *bundleIdentifier = [currentApplication bundleIdentifier];
 	
-	if ([bundleIdentifier isEqualToString:@"com.YoruFukurouProject.YoruFukurou"])
+	for (NSDictionary *targetApplicationInfo in [[NSBundle bundleForClass:self] objectForInfoDictionaryKey:@"SIMBLTargetApplications"])
 	{
-		installed = TwexpandSwizzle(@"TCURLEntity", @selector(displayURL));
-	}
-	else if ([bundleIdentifier isEqualToString:@"com.tapbots.TweetbotMac"])
-	{
-		installed = TwexpandSwizzle(@"PTHTweetbotEntity", @selector(displayURLString));
+		if ([targetApplicationInfo isKindOfClass:[NSDictionary class]] && [targetApplicationInfo[@"BundleIdentifier"] isEqual:bundleIdentifier])
+		{
+			NSDictionary *swizzleInfo = targetApplicationInfo[@"SwizzleInfo"];
+			Class tweetEntityClass = NSClassFromString(swizzleInfo[@"TweetEntityClass"]);
+			SEL displayURLSelector = NSSelectorFromString(swizzleInfo[@"DisplayURLSelector"]);
+			expandedURLSelector = NSSelectorFromString(swizzleInfo[@"ExpandedURLSelector"]);
+			Method m1 = class_getInstanceMethod(tweetEntityClass, displayURLSelector);
+			Method m2 = class_getInstanceMethod([NSObject class], @selector(twexpand_displayExpandedURLString));
+			installed = expandedURLSelector && m1 && m2 && strcmp(method_getTypeEncoding(m1), method_getTypeEncoding(m2)) == 0;
+			if (installed)
+				method_exchangeImplementations(m1, m2);
+			
+			break;
+		}
 	}
 	
 	if (installed)
@@ -51,15 +50,19 @@ static BOOL TwexpandSwizzle(NSString *className, SEL selector)
 
 @end
 
-static NSString *displayURLString(id self, SEL displayURLStringSelector, SEL expandedURLSelector)
+@implementation NSObject (Twexpand)
+
+- (id) twexpand_displayExpandedURLString
 {
-	NSString *displayURLString = [self performSelector:NSSelectorFromString([@"twexpand_" stringByAppendingString:NSStringFromSelector(displayURLStringSelector)])];
-	NSString *expandedURLString = nil;
-	if ([displayURLString isKindOfClass:[NSString class]])
+	id displayURL = [self twexpand_displayExpandedURLString];
+	id expandedURL = nil;
+	if ([displayURL isKindOfClass:[NSString class]])
 	{
 		@try
 		{
-			expandedURLString = [[self performSelector:expandedURLSelector] absoluteString];
+			expandedURL = [self performSelector:expandedURLSelector];
+			if ([expandedURL isKindOfClass:[NSURL class]])
+				expandedURL = [expandedURL absoluteString];
 		}
 		@catch (NSException *exception)
 		{
@@ -69,23 +72,7 @@ static NSString *displayURLString(id self, SEL displayURLStringSelector, SEL exp
 			});
 		}
 	}
-	return expandedURLString ?: displayURLString;
-}
-
-@implementation NSObject (TCURLEntity)
-
-- (id) twexpand_displayURL
-{
-	return displayURLString(self, _cmd, @selector(URL));
-}
-
-@end
-
-@implementation NSObject (PTHTweetbotEntity)
-
-- (id) twexpand_displayURLString
-{
-	return displayURLString(self, _cmd, @selector(expandedURL));
+	return [expandedURL isKindOfClass:[NSString class]] ? expandedURL : displayURL;
 }
 
 @end

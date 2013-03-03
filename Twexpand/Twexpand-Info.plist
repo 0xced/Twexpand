@@ -29,10 +29,28 @@
 		<dict>
 			<key>BundleIdentifier</key>
 			<string>com.YoruFukurouProject.YoruFukurou</string>
+			<key>SwizzleInfo</key>
+			<dict>
+				<key>TweetEntityClass</key>
+				<string>TCURLEntity</string>
+				<key>DisplayURLSelector</key>
+				<string>displayURL</string>
+				<key>ExpandedURLSelector</key>
+				<string>URL</string>
+			</dict>
 		</dict>
 		<dict>
 			<key>BundleIdentifier</key>
 			<string>com.tapbots.TweetbotMac</string>
+			<key>SwizzleInfo</key>
+			<dict>
+				<key>TweetEntityClass</key>
+				<string>PTHTweetbotEntity</string>
+				<key>DisplayURLSelector</key>
+				<string>displayURLString</string>
+				<key>ExpandedURLSelector</key>
+				<string>expandedURL</string>
+			</dict>
 		</dict>
 	</array>
 </dict>
