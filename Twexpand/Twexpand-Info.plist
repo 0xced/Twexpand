@@ -65,6 +65,19 @@
 				<string>expandedURL</string>
 			</dict>
 		</dict>
+		<dict>
+			<key>BundleIdentifier</key>
+			<string>com.mrrsoftware.Syrinx</string>
+			<key>SwizzleInfo</key>
+			<dict>
+				<key>TweetEntityClass</key>
+				<string>SRXURLEntity</string>
+				<key>DisplayURLSelector</key>
+				<string>displayURLString</string>
+				<key>ExpandedURLSelector</key>
+				<string>expandedURL</string>
+			</dict>
+		</dict>
 	</array>
 </dict>
 </plist>
