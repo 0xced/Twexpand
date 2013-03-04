@@ -91,6 +91,19 @@
 				<string>expandedURL</string>
 			</dict>
 		</dict>
+		<dict>
+			<key>BundleIdentifier</key>
+			<string>com.twitter.twitter-mac</string>
+			<key>SwizzleInfo</key>
+			<dict>
+				<key>TweetEntityClass</key>
+				<string>TwitterEntityURL</string>
+				<key>DisplayURLSelector</key>
+				<string>displayString</string>
+				<key>ExpandedURLSelector</key>
+				<string>expandedURL</string>
+			</dict>
+		</dict>
 	</array>
 </dict>
 </plist>
