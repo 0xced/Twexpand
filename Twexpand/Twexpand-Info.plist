@@ -104,6 +104,32 @@
 				<string>expandedURL</string>
 			</dict>
 		</dict>
+		<dict>
+			<key>BundleIdentifier</key>
+			<string>com.iconfactory.Twitterrific</string> <!-- Web Download Version -->
+			<key>SwizzleInfo</key>
+			<dict>
+				<key>TweetEntityClass</key>
+				<string>TweetLink</string>
+				<key>DisplayURLSelector</key>
+				<string>displayName</string>
+				<key>ExpandedURLSelector</key>
+				<string>expandedURL</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>BundleIdentifier</key>
+			<string>com.iconfactory.mac.Twitterrific</string> <!-- Mac App Store Version -->
+			<key>SwizzleInfo</key>
+			<dict>
+				<key>TweetEntityClass</key>
+				<string>TweetLink</string>
+				<key>DisplayURLSelector</key>
+				<string>displayName</string>
+				<key>ExpandedURLSelector</key>
+				<string>expandedURL</string>
+			</dict>
+		</dict>
 	</array>
 </dict>
 </plist>

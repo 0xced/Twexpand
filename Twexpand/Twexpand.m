@@ -60,6 +60,9 @@ static SEL expandedURLSelector;
 	{
 		@try
 		{
+			if ([self isKindOfClass:NSClassFromString(@"TweetLink")] && ![[self valueForKey:@"type"] isEqual:@(0)])
+				return displayURL;
+			
 			expandedURL = [self performSelector:expandedURLSelector];
 			if ([expandedURL isKindOfClass:[NSURL class]])
 				expandedURL = [expandedURL absoluteString];
