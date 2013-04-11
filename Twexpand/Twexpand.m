@@ -42,10 +42,15 @@ static SEL expandedURLSelector;
 		}
 	}
 	
+	NSBundle *bundle = [NSBundle bundleForClass:self];
+	NSString *name = [bundle objectForInfoDictionaryKey:@"CFBundleExecutable"];
+	NSString *version = [bundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+	NSString *build = [bundle objectForInfoDictionaryKey:@"CFBundleVersion"];
+	NSString *plugin = [NSString stringWithFormat:@"%@ %@ (%@)", name, version, build];
 	if (installed)
-		NSLog(@"Successfully installed %@ into %@", self, currentApplication.localizedName);
+		NSLog(@"Successfully installed %@ into %@", plugin, currentApplication.localizedName);
 	else
-		NSLog(@"Failed to install %@ into %@", self, currentApplication.localizedName);
+		NSLog(@"Failed to install %@ into %@", plugin, currentApplication.localizedName);
 }
 
 @end
